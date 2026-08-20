@@ -4,7 +4,7 @@ load_dotenv()
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableParallel
+from langchain_core.runnables import RunnableParallel, RunnableLambda
 
 # Initialize the model
 model = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite")
@@ -45,12 +45,15 @@ topic = "Parallel Runnables"
 chain = RunnableParallel({
     # Define two parallel branches:
     # Each branch is a pipeline: prompt → model → parser
-    "short": short_prompt | model | parser,
-    "detailed": detailed_prompt | model | parser
+    "short": RunnableLambda(lambda x:x['short']) | short_prompt | model | parser,
+    "detailed": RunnableLambda(lambda x:x['detailed']) | detailed_prompt | model | parser
 })
 
 # Invoke the parallel chain with input
-result = chain.invoke({"topic": "parallel runnables"})
+result = chain.invoke({
+    "short": {"topic": "parallel runnables"},
+    "detailed": {"topic": "bm25 in RAG"}
+})
 
 # Each branch runs simultaneously and returns its own result
 print(result['short'])     # Output from the short explanation branch
