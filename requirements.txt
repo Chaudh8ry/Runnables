@@ -2,8 +2,10 @@ langchain
 langchain-core
 langchain-community
 langgraph
-mistral
+langchain-mistralai
+mistralai
 huggingface_hub
 langchain-google-genai
 langchain-groq
 python-dotenv
+langchain-tavily
